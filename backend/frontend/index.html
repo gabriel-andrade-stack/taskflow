@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>TaskFlow</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+<h1 class="title">📋 TaskFlow</h1>
+
+<div class="container">
+
+    <input id="tarefa" placeholder="Nova tarefa" onkeypress="handleKey(event)">
+    <button class="add-btn" onclick="add()">Adicionar</button>
+
+    <ul id="lista"></ul>
+
+</div>
+
+<script>
+const API = "http://localhost:3000/tarefas";
+
+async function carregar() {
+    const res = await fetch(API);
+    const tarefas = await res.json();
+
+    const lista = document.getElementById("lista");
+    lista.innerHTML = "";
+
+    tarefas.forEach(t => {
+        const li = document.createElement("li");
+
+        li.innerHTML = `
+    <span class="task-text">
+        ${t.titulo}
+    </span>
+
+    <div class="task-actions">
+        <span class="status">
+            ${t.concluida ? "✅ Concluída" : "⏳ Pendente"}
+        </span>
+
+        <button onclick="concluir(${t.id}, ${t.concluida})">
+            ${t.concluida ? "🔄" : "✅"}
+        </button>
+
+        <button onclick="deletar(${t.id})">🗑️</button>
+    </div>
+`;
+        lista.appendChild(li);
+    });
+}
+
+async function add() {
+    const input = document.getElementById("tarefa");
+    const titulo = input.value;
+
+    if (!titulo.trim()) return;
+
+    await fetch(API, {
+        method: "POST",
+        headers: {"Content-Type": "application/json"},
+        body: JSON.stringify({ titulo })
+    });
+
+    input.value = "";
+    carregar();
+}
+
+async function concluir(id, status) {
+    await fetch(API + "/" + id, {
+        method: "PUT",
+        headers: {"Content-Type": "application/json"},
+        body: JSON.stringify({ concluida: status ? 0 : 1 })
+    });
+
+    carregar();
+}
+
+async function deletar(id) {
+    await fetch(API + "/" + id, { method: "DELETE" });
+    carregar();
+}
+
+function handleKey(event) {
+    if (event.key === "Enter") add();
+}
+
+carregar();
+</script>
+
+</body>
+</html>
