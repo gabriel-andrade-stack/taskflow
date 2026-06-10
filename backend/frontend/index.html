@@ -1,93 +1,220 @@
 <!DOCTYPE html>
-<html>
+<html lang="pt-BR">
+
 <head>
-    <title>TaskFlow</title>
-    <link rel="stylesheet" href="style.css">
+<meta charset="UTF-8">
+<title>TaskFlow Pro</title>
+<link rel="stylesheet" href="style.css">
 </head>
 
 <body>
 
-<h1 class="title">📋 TaskFlow</h1>
+<h1 class="title">🚀 TaskFlow Pro</h1>
 
 <div class="container">
 
-    <input id="tarefa" placeholder="Nova tarefa" onkeypress="handleKey(event)">
-    <button class="add-btn" onclick="add()">Adicionar</button>
+<!-- DASHBOARD -->
+<div class="dashboard">
 
-    <ul id="lista"></ul>
+<div class="card">
+<h2 id="total">0</h2>
+<p>Total</p>
+</div>
+
+<div class="card">
+<h2 id="pendentes">0</h2>
+<p>Pendentes</p>
+</div>
+
+<div class="card">
+<h2 id="concluidas">0</h2>
+<p>Concluídas</p>
+</div>
+
+</div>
+
+<!-- FORM -->
+<div class="form">
+
+<input id="tarefa" placeholder="Nova tarefa">
+
+<select id="prioridade">
+<option value="Alta">Alta</option>
+<option value="Média" selected>Média</option>
+<option value="Baixa">Baixa</option>
+</select>
+
+<button onclick="add()" class="add-btn">Adicionar</button>
+
+</div>
+
+<!-- PESQUISA -->
+<input id="pesquisa" placeholder="Pesquisar..." onkeyup="filtrar()" class="pesquisa">
+
+<!-- FILTRO -->
+<select id="filtro" onchange="carregar()" class="filtro">
+<option value="todas">Todas</option>
+<option value="pendentes">Pendentes</option>
+<option value="concluidas">Concluídas</option>
+</select>
+
+<!-- LISTA -->
+<ul id="lista"></ul>
+
+</div>
+
+<!-- MODAL -->
+<div id="modal" class="modal hidden">
+
+<div class="modal-content">
+
+<h2>Editar Tarefa</h2>
+
+<input id="editTitulo">
+
+<select id="editPrioridade">
+<option value="Alta">Alta</option>
+<option value="Média">Média</option>
+<option value="Baixa">Baixa</option>
+</select>
+
+<button onclick="salvarEdicao()">Salvar</button>
+<button onclick="fecharModal()">Cancelar</button>
+
+</div>
 
 </div>
 
 <script>
+
 const API = "http://localhost:3000/tarefas";
 
+let editandoId = null;
+
+// CARREGAR
 async function carregar() {
-    const res = await fetch(API);
-    const tarefas = await res.json();
 
-    const lista = document.getElementById("lista");
-    lista.innerHTML = "";
+const res = await fetch(API);
+const tarefas = await res.json();
 
-    tarefas.forEach(t => {
-        const li = document.createElement("li");
+const lista = document.getElementById("lista");
+lista.innerHTML = "";
 
-        li.innerHTML = `
-    <span class="task-text">
-        ${t.titulo}
-    </span>
+document.getElementById("total").innerText = tarefas.length;
+document.getElementById("pendentes").innerText = tarefas.filter(t => !t.concluida).length;
+document.getElementById("concluidas").innerText = tarefas.filter(t => t.concluida).length;
 
-    <div class="task-actions">
-        <span class="status">
-            ${t.concluida ? "✅ Concluída" : "⏳ Pendente"}
-        </span>
+let filtro = document.getElementById("filtro").value;
+let dados = tarefas;
 
-        <button onclick="concluir(${t.id}, ${t.concluida})">
-            ${t.concluida ? "🔄" : "✅"}
-        </button>
+if (filtro === "pendentes") dados = tarefas.filter(t => !t.concluida);
+if (filtro === "concluidas") dados = tarefas.filter(t => t.concluida);
 
-        <button onclick="deletar(${t.id})">🗑️</button>
-    </div>
+dados.forEach(t => {
+
+const li = document.createElement("li");
+
+li.innerHTML = `
+<div>
+<strong class="${t.concluida ? "done" : ""}">${t.titulo}</strong>
+<span class="tag">${t.prioridade}</span>
+</div>
+
+<div>
+<button onclick="concluir(${t.id}, ${t.concluida})">✔</button>
+<button onclick="editar(${t.id}, '${t.titulo}', '${t.prioridade}')">✏</button>
+<button onclick="deletar(${t.id})">🗑</button>
+</div>
 `;
-        lista.appendChild(li);
-    });
+
+lista.appendChild(li);
+
+});
+
 }
 
+// ADD
 async function add() {
-    const input = document.getElementById("tarefa");
-    const titulo = input.value;
 
-    if (!titulo.trim()) return;
+const titulo = document.getElementById("tarefa").value;
+const prioridade = document.getElementById("prioridade").value;
 
-    await fetch(API, {
-        method: "POST",
-        headers: {"Content-Type": "application/json"},
-        body: JSON.stringify({ titulo })
-    });
+await fetch(API, {
+method: "POST",
+headers: {"Content-Type":"application/json"},
+body: JSON.stringify({ titulo, prioridade })
+});
 
-    input.value = "";
-    carregar();
+document.getElementById("tarefa").value = "";
+carregar();
 }
 
+// CONCLUIR
 async function concluir(id, status) {
-    await fetch(API + "/" + id, {
-        method: "PUT",
-        headers: {"Content-Type": "application/json"},
-        body: JSON.stringify({ concluida: status ? 0 : 1 })
-    });
 
-    carregar();
+await fetch(`${API}/${id}`, {
+method: "PUT",
+headers: {"Content-Type":"application/json"},
+body: JSON.stringify({ concluida: status ? 0 : 1 })
+});
+
+carregar();
 }
 
+// DELETAR
 async function deletar(id) {
-    await fetch(API + "/" + id, { method: "DELETE" });
-    carregar();
+
+await fetch(`${API}/${id}`, { method: "DELETE" });
+
+carregar();
 }
 
-function handleKey(event) {
-    if (event.key === "Enter") add();
+// EDITAR
+function editar(id, titulo, prioridade) {
+
+editandoId = id;
+
+document.getElementById("editTitulo").value = titulo;
+document.getElementById("editPrioridade").value = prioridade;
+
+document.getElementById("modal").classList.remove("hidden");
+}
+
+// SALVAR
+async function salvarEdicao() {
+
+await fetch(`${API}/editar/${editandoId}`, {
+method: "PUT",
+headers: {"Content-Type":"application/json"},
+body: JSON.stringify({
+titulo: document.getElementById("editTitulo").value,
+prioridade: document.getElementById("editPrioridade").value
+})
+});
+
+fecharModal();
+carregar();
+}
+
+// FECHAR
+function fecharModal() {
+document.getElementById("modal").classList.add("hidden");
+}
+
+// PESQUISA
+function filtrar() {
+
+let termo = document.getElementById("pesquisa").value.toLowerCase();
+
+document.querySelectorAll("li").forEach(li => {
+li.style.display = li.innerText.toLowerCase().includes(termo)
+? "flex" : "none";
+});
+
 }
 
 carregar();
+
 </script>
 
 </body>

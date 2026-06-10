@@ -1,171 +1,101 @@
 body {
-    font-family: Arial, sans-serif;
-    background: #f4f6f8;
-    display: flex;
-    justify-content: center;
-    margin-top: 50px;
+font-family: Arial;
+background: #0f172a;
+color: white;
+margin: 0;
+padding: 30px;
+}
+
+.title {
+text-align: center;
+margin-bottom: 20px;
 }
 
 .container {
-    background: white;
-    padding: 20px;
-    border-radius: 10px;
-    width: 400px;
-    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+max-width: 800px;
+margin: auto;
+background: #1e293b;
+padding: 20px;
+border-radius: 10px;
 }
 
-h1 {
-    text-align: center;
+.dashboard {
+display: flex;
+gap: 10px;
+margin-bottom: 15px;
 }
 
-input {
-    width: 70%;
-    padding: 10px;
-    border-radius: 5px;
-    border: 1px solid #ccc;
+.card {
+flex: 1;
+background: #334155;
+padding: 10px;
+border-radius: 8px;
+text-align: center;
+}
+
+.form {
+display: flex;
+gap: 10px;
+margin-bottom: 10px;
+}
+
+input, select {
+padding: 8px;
+border-radius: 5px;
+border: none;
 }
 
 button {
-    padding: 10px;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
+cursor: pointer;
 }
 
-.add-btn {
-    background: #4CAF50;
-    color: white;
+ul {
+list-style: none;
+padding: 0;
 }
 
 li {
-    margin-top: 10px;
-    padding: 10px;
-    background: #f9f9f9;
-    border-radius: 5px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
+display: flex;
+justify-content: space-between;
+margin-bottom: 8px;
+padding: 10px;
+background: #334155;
+border-radius: 8px;
 }
 
-.actions button {
-    margin-left: 5px;
+.done {
+text-decoration: line-through;
 }
 
-.concluida {
-    text-decoration: line-through;
-    color: gray;
+.tag {
+margin-left: 10px;
+font-size: 12px;
+opacity: 0.7;
 }
 
-button:hover {
-    opacity: 0.8;
+/* MODAL */
+.modal {
+position: fixed;
+top: 0;
+left: 0;
+width: 100%;
+height: 100%;
+background: rgba(0,0,0,0.7);
+display: flex;
+justify-content: center;
+align-items: center;
 }
 
-body {
-    font-family: Arial, sans-serif;
-    background: #f4f6f8;
-    margin: 0;
-
-    display: flex;
-    flex-direction: column;
-    align-items: center;
+.modal-content {
+background: #1e293b;
+padding: 20px;
+border-radius: 10px;
+display: flex;
+flex-direction: column;
+gap: 10px;
+width: 300px;
 }
 
-/* TÍTULO NO TOPO */
-.title {
-    margin-top: 40px;
-    margin-bottom: 20px;
-    font-size: 34px;
-    font-weight: bold;
-    color: #333;
-}
-
-/* CAIXA PRINCIPAL */
-.container {
-    background: white;
-    padding: 20px;
-    border-radius: 12px;
-    width: 420px;
-    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-}
-
-/* INPUT */
-input {
-    width: 70%;
-    padding: 10px;
-    border-radius: 6px;
-    border: 1px solid #ccc;
-}
-
-/* BOTÃO ADD */
-.add-btn {
-    background: #4CAF50;
-    color: white;
-    padding: 10px;
-    border: none;
-    border-radius: 6px;
-    cursor: pointer;
-}
-
-/* LISTA */
-li {
-    margin-top: 10px;
-    padding: 10px;
-    background: #f9f9f9;
-    border-radius: 6px;
-
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-}
-
-/* TAREFA CONCLUÍDA */
-.concluida {
-    text-decoration: line-through;
-    color: gray;
-}
-
-/* BOTÕES */
-button:hover {
-    opacity: 0.8;
-}
-
-li {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    gap: 10px;
-}
-
-/* texto da tarefa */
-.task-text {
-    flex: 1;
-    word-break: break-word;
-}
-
-/* área das ações */
-.task-actions {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    flex-shrink: 0;
-}
-
-/* status */
-.status {
-    font-size: 12px;
-    color: #555;
-    white-space: nowrap;
-}
-
-/* botões menores */
-.task-actions button {
-    padding: 5px 8px;
-    border-radius: 5px;
-    border: none;
-    cursor: pointer;
-}
-
-/* efeito hover */
-.task-actions button:hover {
-    opacity: 0.8;
+.hidden {
+display: none;
 }
